@@ -40,3 +40,15 @@ const generateToken =(id) =>{
 - we going to capture that when the user signs up.
 - because we're able to capture that, if the user try to log in from another device , we can tigger as two factor authentication. 
 - npm i ua-parser-js
+
+
+# login 
+### get data form req.body 
+### check validation 
+### check user actually exist in database.
+### if user doesn't exist then show message(User not found , please signup)
+### check password is correct or not compare by using bcrypt
+### if password is not correct show error(Invalid email or password)
+### Trigger 2FA for unknow UserAgent
+### login the user if email and password by sending jwt token in their cookies  
+### send some user data in the res

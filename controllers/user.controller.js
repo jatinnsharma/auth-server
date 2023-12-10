@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const User = require('../models/user.models')
 const { generateToken } = require('../utils')
 const parser = require('ua-parser-js')
+const bcrypt = require('bcryptjs')
 
 exports.registerUser = asyncHandler(async (req, res) => {
     const {name,email ,password} = req.body
@@ -64,3 +65,54 @@ exports.registerUser = asyncHandler(async (req, res) => {
      
 });
 
+exports.loginUser = asyncHandler(async (req,res)=>{
+    const {email , password} = req.body;
+
+    // validation 
+    if(!email || !password){
+        res.status(400);
+        throw new Error('Please enter email and password!')
+    }
+
+
+    // check user exist 
+    const user = await User.findOne({email});
+
+    if(!user){
+        res.status(404);
+        throw new Error("User not found, please signup")
+    }
+
+    // check password is correct
+    const passwordIsCorrect = await bcrypt.compare(password,user.password)
+
+    if(!passwordIsCorrect){
+        res.status(400);
+        throw new Error('Invalid email or password')
+    }
+
+    // Trgger 2FA for unknow UserAgent 
+
+    // Generate Token 
+    const token = generateToken(user._id);
+
+    if(user && password){
+
+        // send HTTP-only cookie
+        res.cookie('token',token,{
+            path:'/',
+            httpOnly:true,
+            expires:new Date(Date.now()+1000 * 86400), // 1 day 
+            sameSite:'none',
+            secure:true
+         })
+         const {_id,name,email,bio,phone,photo,role,isVerified} = user;
+     
+         res.status(201).json({
+             _id,name,email,bio,phone,photo,role,isVerified,token
+         })
+    }else{
+        res.status(500);
+        throw new Error('Something went wrong, please try again');
+     }
+})
