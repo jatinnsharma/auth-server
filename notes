@@ -1,0 +1,40 @@
+# Status Code
+
+400 - bad request
+201 - created 
+
+
+
+# Generate Token
+
+- create arrow function
+- have id parameter because we're going to use the id of use to generate token
+- create JWT_SECRET in .env file.
+for example
+------------
+const generateToken =(id) =>{
+    return jwt.sign(
+        {id},
+        process.env.JWT_SECRET,
+        {expiresIn:'1d' }
+    )
+};
+
+
+# Register User
+
+- When we want to register a user , what's the first thing we do?
+- we need some credentials from that user credentials being the name , the email and the password. destructed it out from req.body
+- validation
+  - what if those information are not send from the request/frontend
+  - if(!name || !email || !password ) return error and message;
+- check if user exists - find in the database
+- if the user does not exist ? then register the user.
+  - create new user
+- when create the new log that user in immediately
+- how to log that use
+- we are going to generate a token , a JSON web token and then send that token along with cookies
+
+res.cookie(name,sendgeneratetoken(token),object)
+
+- if user is actually create then send response to frontend if not created and throw error 
