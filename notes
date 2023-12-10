@@ -56,3 +56,24 @@ const generateToken =(id) =>{
 
 # logout 
 ### if expire the cookie or delete the cookie , then user is logged out.
+
+
+# Get User 
+#### when you want to get a user , you dont want this route to be accessible to just anybody
+### user should only be able to get their own data.
+### should not able to get other user data information.
+### admin or who have right should be able to get the user data.
+### create middleware that product our routes. 
+
+## auth middleware 
+#### get user cookie 
+#### what if there is no token response error (Not authorized, please login)
+#### verify jwt token 
+```bash 
+cosnt verified - jwt.verify(token,proccess.env.JWT_SECRET)
+``` 
+#### get user id from token
+#### dont send user password - select("-password")
+#### if no user found send response user not found 
+#### if user is suspended he/she no able to get user data 
+#### if everything is fine 

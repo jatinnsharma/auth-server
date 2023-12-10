@@ -132,3 +132,7 @@ exports.logoutUser= asyncHandler(async (req,res)=>{
      return res.status(200).json({message:"Logout successful"})
 })
 
+
+exports.getUser=asyncHandler(async (req,res)=>{
+    res.send("helloworld")
+})
