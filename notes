@@ -34,7 +34,9 @@ const generateToken =(id) =>{
 - when create the new log that user in immediately
 - how to log that use
 - we are going to generate a token , a JSON web token and then send that token along with cookies
-
-res.cookie(name,sendgeneratetoken(token),object)
-
+- res.cookie(name,sendgeneratetoken(token),object)
 - if user is actually create then send response to frontend if not created and throw error 
+- user agent - either user browser or the user device.
+- we going to capture that when the user signs up.
+- because we're able to capture that, if the user try to log in from another device , we can tigger as two factor authentication. 
+- npm i ua-parser-js
