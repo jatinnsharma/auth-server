@@ -52,3 +52,7 @@ const generateToken =(id) =>{
 ### Trigger 2FA for unknow UserAgent
 ### login the user if email and password by sending jwt token in their cookies  
 ### send some user data in the res
+
+
+# logout 
+### if expire the cookie or delete the cookie , then user is logged out.

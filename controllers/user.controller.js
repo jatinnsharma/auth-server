@@ -4,6 +4,7 @@ const { generateToken } = require('../utils')
 const parser = require('ua-parser-js')
 const bcrypt = require('bcryptjs')
 
+// create user 
 exports.registerUser = asyncHandler(async (req, res) => {
     const {name,email ,password} = req.body
     
@@ -65,6 +66,8 @@ exports.registerUser = asyncHandler(async (req, res) => {
      
 });
 
+
+// login user
 exports.loginUser = asyncHandler(async (req,res)=>{
     const {email , password} = req.body;
 
@@ -97,7 +100,6 @@ exports.loginUser = asyncHandler(async (req,res)=>{
     const token = generateToken(user._id);
 
     if(user && password){
-
         // send HTTP-only cookie
         res.cookie('token',token,{
             path:'/',
@@ -116,3 +118,17 @@ exports.loginUser = asyncHandler(async (req,res)=>{
         throw new Error('Something went wrong, please try again');
      }
 })
+
+
+exports.logoutUser= asyncHandler(async (req,res)=>{
+    res.cookie('token',"",{
+        path:'/',
+        httpOnly:true,
+        expires:new Date(0), // expire the cookie immediately
+        sameSite:'none',
+        secure:true
+     })
+
+     return res.status(200).json({message:"Logout successful"})
+})
+
