@@ -39,3 +39,32 @@ exports.protect = asyncHandler(async(req,res,next)=>{
         throw new Error("Not authorized , please login");
     }
 })
+
+
+exports.adminOnly = asyncHandler( async (req,res,next)=>{
+    if(req.user && req.user.role === "admin"){
+        next()
+    }else{
+        res.status(401)
+        throw new Error("Not authorized as an admin");
+    }
+});
+
+exports.authorOnly = asyncHandler( async (req,res,next)=>{
+    if(req.user.role==="author" && req.user.role === "admin"){
+        next()
+    }else{
+        res.status(401)
+        throw new Error("Not authorized as an author");
+    }
+});
+
+exports.verifiedOnly = asyncHandler( async (req,res,next)=>{
+    if(req.user && req.user.isVerified){
+        next()
+    }else{
+        res.status(401)
+        throw new Error("Not authorized, account not verified");
+    }
+});
+
