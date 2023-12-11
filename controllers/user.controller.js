@@ -134,5 +134,15 @@ exports.logoutUser= asyncHandler(async (req,res)=>{
 
 
 exports.getUser=asyncHandler(async (req,res)=>{
-    res.send("helloworld")
+    const user = await User.findById(req.user._id)
+
+    if(user){
+        const {_id,name,email,bio,phone,photo,role,isVerified} = user;
+        res.status(201).json({
+            _id,name,email,bio,phone,photo,role,isVerified
+        })
+    }else{
+        res.status(404);
+        throw new Error("User not found");
+    }
 })
