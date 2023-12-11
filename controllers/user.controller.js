@@ -3,6 +3,7 @@ const User = require('../models/user.models')
 const { generateToken } = require('../utils')
 const parser = require('ua-parser-js')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 // create user 
 exports.registerUser = asyncHandler(async (req, res) => {
@@ -205,4 +206,34 @@ exports.getAllUsers = asyncHandler(async (req,res)=>{
 
     res.status(200).json({users});
 })
+
+exports.loginStatus=asyncHandler(async(req,res)=>{
+    const token = req.cookies.token;
+    if(!token){
+        return res.json(false);
+    }
+    // verify token 
+    const verified = jwt.verify(token,process.env.JWT_SECRET);
+
+    if(verified){
+        return res.json(true);
+    }
+    return res.json(false);
+})
+
+exports.changeUserRole = asyncHandler(async(req,res)=>{
+    const {role , id } = req.body 
+
+    const user = await User.findById(id);
+
+    if(!user){
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    user.role = role;
+    await user.save()
+
+    res.status(200).json({message:`User role updated to ${role}`})
+});
 
