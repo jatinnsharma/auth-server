@@ -77,3 +77,11 @@ cosnt verified - jwt.verify(token,proccess.env.JWT_SECRET)
 #### if no user found send response user not found 
 #### if user is suspended he/she no able to get user data 
 #### if everything is fine 
+
+
+
+# update user 
+#### Get user infomation from database.
+#### check user is present or not if user is not found show error 
+#### else update the user dont update email of the user 
+#### after update sent response back to user 
