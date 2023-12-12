@@ -4,6 +4,7 @@ const { generateToken } = require('../utils')
 const parser = require('ua-parser-js')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const sendEmail = require('../utils/sendEmail')
 
 // create user 
 exports.registerUser = asyncHandler(async (req, res) => {
@@ -253,7 +254,7 @@ exports.sendAutomatedEmails = asyncHandler(async (req,res)=>{
       res.status(404);
       throw new Error("User not found");
     }
-  
+   
     const sent_from = process.env.EMAIL_USER;
     const name = user.name;
     const link = `${process.env.FRONTEND_URL}${url}`;
