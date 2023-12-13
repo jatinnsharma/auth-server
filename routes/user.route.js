@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const {registerUser, loginUser, logoutUser, getUser, updateUser, deleteUser, getAllUsers, loginStatus, changeUserRole, sendAutomatedEmails} = require('../controllers/user.controller');
+const {registerUser, loginUser, logoutUser, getUser, updateUser, deleteUser, getAllUsers, loginStatus, changeUserRole, sendAutomatedEmails, sendVerificationEmail, verifyUser, forgotPssword} = require('../controllers/user.controller');
 const { protect, adminOnly, authorOnly } = require('../middlewares/auth.middleware');
 
 router.post('/register',registerUser)
@@ -13,6 +13,12 @@ router.delete('/:id',protect,adminOnly,deleteUser)
 router.get('/get-all-users',protect,authorOnly,getAllUsers)
 router.get('/login-status',loginStatus)
 router.post('/change-user-role',protect,adminOnly,changeUserRole)
-router.post('/end-automated-email',protect,sendAutomatedEmails)
+router.post('/send-automated-email',protect,sendAutomatedEmails)
+
+router.post('/send-verification-email',protect,sendVerificationEmail)
+router.patch('/verify-user/:verification-token',protect,verifyUser)  
+router.patch('/forgot-password',forgotPssword)
+
+
 
 module.exports = router;

@@ -87,3 +87,12 @@ cosnt verified - jwt.verify(token,proccess.env.JWT_SECRET)
 #### after update sent response back to user 
 
 
+# send email verification
+#### getting the user from database
+#### check user is exited or not 
+#### check if user already verified.
+#### if not verified , Delete token if it exists in DB 
+#### create verification token and save
+#### hash token and save 
+#### Construct Verification URL 
+#### send email

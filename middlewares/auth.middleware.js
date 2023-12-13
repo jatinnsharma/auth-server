@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const User = require('../models/user.models')
+const User = require('../models/user.schema')
 const jwt = require('jsonwebtoken')
 
 exports.protect = asyncHandler(async(req,res,next)=>{
@@ -64,7 +64,7 @@ exports.verifiedOnly = asyncHandler( async (req,res,next)=>{
         next()
     }else{
         res.status(401)
-        throw new Error("Not authorized, account not verified");
+        throw new  Error("Not authorized, account not verified");
     }
 });
 

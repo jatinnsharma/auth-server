@@ -1,10 +1,12 @@
 const asyncHandler = require('express-async-handler')
-const User = require('../models/user.models')
-const { generateToken } = require('../utils')
+const User = require('../models/user.schema')
+const { generateToken, hashToken } = require('../utils')
 const parser = require('ua-parser-js')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../utils/sendEmail')
+const crypto = require('crypto')
+const Token = require('../models/token.schema')
 
 // create user 
 exports.registerUser = asyncHandler(async (req, res) => {
@@ -72,7 +74,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 // login user
 exports.loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
+    
     // validation 
     if (!email || !password) {
         res.status(400);
@@ -121,6 +123,100 @@ exports.loginUser = asyncHandler(async (req, res) => {
     }
 })
 
+// send verification email
+exports.sendVerificationEmail = asyncHandler(async (req,res)=>{
+    const user = await User.findById(req.user._id);
+
+    if(!user){
+        res.status(404);
+        throw new Error("user already verified");
+    }
+
+    // Delete token if it exists in db 
+    let token = await Token.findOne({userId:user._id});
+    if(token){
+        await token.deleteOne();
+    } 
+
+    // create verification token and save 
+    const verificationToken = crypto.randomBytes(32).toString('hex') + user._id;
+    console.log(verificationToken);
+
+    // hash token 
+    const hashedToken = hashToken(verificationToken)
+
+    await new Token({
+        userId:user._id,
+        verifyToken:hashedToken,
+        createdAt:Date.now(),
+        expiresAt:Date.now() + 60 * (60 * 1000), // 60 mins 
+    }).save()
+
+    // construct verification URL 
+    const verificationURL = `${process.env.FRONTEND_URL}/verify/${verificationToken}`;
+
+    // send email 
+    const subject = "Verify Your Account - AUTH-Z";
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = "noreply@zino.com";
+    const template = "verifyEmail";
+    const name = user.name;
+    const link = verificationURL;
+  
+    try {
+      await sendEmail(
+        subject,
+        send_to,
+        sent_from,
+        reply_to,
+        template,
+        name,
+        link
+      );
+      res.status(200).json({ message: "Verification Email Sent" });
+    } catch (error) {
+      res.status(500);
+      throw new Error("Email not sent, please try again");
+    }
+})
+
+// verify user
+exports.verifyUser = asyncHandler(async(req,res)=>{
+    const {verificationToken} = req.params;
+
+    const hashedToken = hashToken(verificationToken)
+
+    const userToken = await Token.findOne(
+        {
+        verifyToken:hashedToken,
+        expiresAt:{$gt:Date.now()}
+        }
+    )
+    if(!userToken){
+        res.status(404);
+        throw new Error("Invalid or Expired Token");
+    }
+
+    // Find user
+    const user = await User.findOne({ _id: userToken.userId});
+
+    if(user.isVerified==true){
+        res.status(404);
+        throw new Error("User is already verified")
+    }
+
+    // Now verify user
+    user.isVerified = true;
+    await user.save();
+
+    res.status(200).json({messsage:"Account Verification Successful" })
+})
+
+// Forgot Password 
+exports.forgotPssword= asyncHandler(async (req,res)=>{
+    res.send('')
+})
 
 exports.logoutUser = asyncHandler(async (req, res) => {
     res.cookie('token', "", {
@@ -197,6 +293,7 @@ exports.deleteUser = asyncHandler( async (req,res) =>{
     res.status(200).json({message:"User deleted successfully"})
 });
 
+// get all users data 
 exports.getAllUsers = asyncHandler(async (req,res)=>{
     const users = await User.find().sort("-createdAt").select("-password")
 
@@ -208,6 +305,7 @@ exports.getAllUsers = asyncHandler(async (req,res)=>{
     res.status(200).json({users});
 })
 
+// login status
 exports.loginStatus=asyncHandler(async(req,res)=>{
     const token = req.cookies.token;
     if(!token){
@@ -222,6 +320,7 @@ exports.loginStatus=asyncHandler(async(req,res)=>{
     return res.json(false);
 })
 
+// change user role 
 exports.changeUserRole = asyncHandler(async(req,res)=>{
     const {role , id } = req.body 
 
@@ -275,3 +374,4 @@ exports.sendAutomatedEmails = asyncHandler(async (req,res)=>{
       throw new Error("Email not sent, please try again");
     }
 })
+
