@@ -92,7 +92,23 @@ cosnt verified - jwt.verify(token,proccess.env.JWT_SECRET)
 #### check user is exited or not 
 #### check if user already verified.
 #### if not verified , Delete token if it exists in DB 
-#### create verification token and save
+#### create verification token 
 #### hash token and save 
 #### Construct Verification URL 
 #### send email
+
+
+# forgot password 
+#### getting the user from database
+#### check user is exited or not 
+#### Delete token if it exists in DB 
+#### create Reset token  
+#### Construct Reset URl 
+#### send email 
+
+# T2F
+#### check user which device to login with is this user 
+#### registered in our database
+#### if user is not in our database trigger two factor authentication.
+#### generate 6 digit code 
+#### encrytped login code and save in db.
